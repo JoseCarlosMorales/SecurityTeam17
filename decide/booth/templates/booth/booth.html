@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+    <div id="app-booth">
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- ReactJS -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script src="{% static "Booth.jsx" %}" type="text/babel"></script>
+    <script type="text/babel">
+	var voting = {{voting|safe}};
+	class AppBooth extends React.Component {
+	    constructor(props) {
+		super(props);
+	    }
+
+	    render(){ 
+	    return (
+		<div>
+		    <Booth voting={voting} />
+		</div>
+		);
+	    }
+	}
+
+	const appDiv = document.getElementById("app-booth");
+	ReactDOM.render(<AppBooth />, appDiv);
+    </script>
+
+    <!-- needed to generate big random -->
+    <script src="{% static "crypto/sjcl.js" %}"></script>
+
+    <!-- Big integer -->
+    <script src="{% static "crypto/jsbn.js" %}"></script>
+    <script src="{% static "crypto/jsbn2.js" %}"></script>
+    <script src="{% static "crypto/bigint.js" %}"></script>
+
+    <!-- ElGamal encrypt -->
+    <script src="{% static "crypto/elgamal.js" %}"></script>
+
+    </body>
+{% endblock %}
