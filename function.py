@@ -1,6 +1,7 @@
 import os
 import hashlib
 from traceback import print_tb
+import sqlite3
 
 ejemplo_dir = '.\\DATA'
 
@@ -15,25 +16,33 @@ def search_files (directorio):
 
 def getsha256file(directorio):
     lista = search_files (directorio)
-    for file in lista:
-        print (file)
-        try:
+    conn = sqlite3.connect(':memory:')
+    conn.execute("drop table if exists ficheros")
+    conn.execute('''create table ficheros(
+    fichero     text not null,
+    hash        text not null);''')
+    try:
+        for file in lista:
+            #print (file)
             hashsha = hashlib.sha256()
             with open(file, "rb") as f:
                 for bloque in iter(lambda: f.read(4096), b""):
                     hashsha.update(bloque)
-            print(hashsha.hexdigest())
+            conn.execute('''insert into ficheros values (?,?)''',(file,hashsha.hexdigest()))
+            
+        conn.commit()
+        print(str(conn.execute("SELECT * FROM ficheros").fetchall()))
+        
+    except Exception as e:
+        print("Error: %s" % (e))
+        return ""
 
-        except Exception as e:
-            print("Error: %s" % (e))
-            return ""
-
-        except:
-            print("Error desconocido")
-            return ""
+    except:
+        print("Error desconocido")
+        return ""
 
 
 if __name__ == '__main__':
     search_files(ejemplo_dir)
-    print(getsha256file('.\\DATA'))
+    getsha256file('.\\DATA')
     
