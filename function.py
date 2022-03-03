@@ -1,6 +1,6 @@
 import os
 import hashlib
-from traceback import print_tb
+import uuid
 import sqlite3
 
 ejemplo_dir = '.\\DATA'
@@ -20,15 +20,17 @@ def getsha256file(directorio):
     conn.execute("drop table if exists ficheros")
     conn.execute('''create table ficheros(
     fichero     text not null,
-    hash        text not null);''')
+    hash        text not null,
+    token       text not null);''')
     try:
         for file in lista:
             #print (file)
             hashsha = hashlib.sha256()
+            token = uuid.uuid4().hex
             with open(file, "rb") as f:
                 for bloque in iter(lambda: f.read(4096), b""):
                     hashsha.update(bloque)
-            conn.execute('''insert into ficheros values (?,?)''',(file,hashsha.hexdigest()))
+            conn.execute('''insert into ficheros values (?,?,?)''',(file,hashsha.hexdigest(),token))   
             
         conn.commit()
         print(str(conn.execute("SELECT * FROM ficheros").fetchall()))
