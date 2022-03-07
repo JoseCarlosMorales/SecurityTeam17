@@ -1,0 +1,3 @@
+Fecha: 2022-03-07 20-56-59
+Porcentaje de ACIERTO: 99.050%
+Porcentaje de FALLO: 0.94936%

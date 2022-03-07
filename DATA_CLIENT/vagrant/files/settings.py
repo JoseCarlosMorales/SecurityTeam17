@@ -1,5 +1,5 @@
 DEBUG = True
-
+#HOLA PESICOLA
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
