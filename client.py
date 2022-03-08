@@ -53,7 +53,7 @@ def creacion_logs(ok, fail):
 
     nombre_log = './logs/'+strftime("%Y-%m-%d %H-%M-%S", gmtime())+'_log.txt'
     with open(str(nombre_log), 'w') as f:
-        f.write('Fecha: '+str(strftime("%Y-%m-%d %H-%M-%S", gmtime()))+'\nPorcentaje de ACIERTO: '+str(porcentaje_ok)[:-10]+'%\nPorcentaje de FALLO: '+str(porcentaje_fail)[:-10]+'%')
+        f.write('Fecha: '+str(strftime("%Y-%m-%d %H-%M-%S", gmtime()))+'\nPorcentaje de ACIERTO: '+str(porcentaje_ok)+'%\nPorcentaje de FALLO: '+str(porcentaje_fail)+'%')
     
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((config.HOST,config.PORT))
