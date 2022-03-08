@@ -3,11 +3,9 @@ import os
 import hashlib
 import uuid
 import hmac
+import config
 from time import gmtime, strftime
 
-Host = '127.0.0.1'
-Port = 3030
-Dir = '.\DATA_CLIENT'
 
 
 def search_files(directorio):
@@ -25,7 +23,7 @@ def calc_hmac(challenge, token, hashfile):
 
 def get_all_files_and_tokens():
     file_list = []
-    files = search_files(Dir)
+    files = search_files(config.DIR_CLIENT)
     for file in files:
         hashsha = hashlib.sha256()
         token = uuid.uuid4().hex
@@ -52,13 +50,13 @@ def creacion_logs(ok, fail):
     total = ok + fail
     porcentaje_ok = ok/total*100
     porcentaje_fail = fail/total*100
-    
+
     nombre_log = './logs/'+strftime("%Y-%m-%d %H-%M-%S", gmtime())+'_log.txt'
     with open(str(nombre_log), 'w') as f:
         f.write('Fecha: '+str(strftime("%Y-%m-%d %H-%M-%S", gmtime()))+'\nPorcentaje de ACIERTO: '+str(porcentaje_ok)[:-10]+'%\nPorcentaje de FALLO: '+str(porcentaje_fail)[:-10]+'%')
     
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((Host,Port))
+    s.connect((config.HOST,config.PORT))
     data = s.recv(4096)
     archivo_a_enviar = get_all_files_and_tokens()
     cont_ok = 0

@@ -3,17 +3,11 @@ import hmac
 import hashlib
 import sqlite3
 import socket
-import re
+import config
 
-HOST = "127.0.0.1"
-PORT = 3030
-DIR = '.\DATA'
-
-#Creamos esta funcion para recorrer todas las carpetas del directorio 
-# y obtener asi una lista de todos los ficheros que contienen
 def search_files(directorio):
     result = []
-    for nombre_directorio, dirs, ficheros in os.walk(directorio):       
+    for nombre_directorio, _, ficheros in os.walk(directorio):       
         for nombre_fichero in ficheros:
             result.append(nombre_directorio+ '\\' +nombre_fichero)
     return result
@@ -76,8 +70,8 @@ def parse(cadena):
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     bd = sqlite3.connect(':memory:')
-    populate_database(bd, DIR)
-    s.bind((HOST,PORT))
+    populate_database(bd, config.DIR_SERVER)
+    s.bind((config.HOST,config.PORT))
     s.listen()
     conn, addr = s.accept()
     conn.send(b'Connected')
