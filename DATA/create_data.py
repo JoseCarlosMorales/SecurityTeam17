@@ -1,7 +1,9 @@
 import random
 
 def creator():
+
     i = 100
+
     with open('./DATA/messages_data.txt', 'w') as f:
         while i > 0:
             numero = random.randrange(0000000000000000000000, 9999999999999999999999)
