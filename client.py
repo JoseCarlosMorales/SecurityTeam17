@@ -7,12 +7,14 @@ import config
 from time import gmtime, strftime
 
 def calc_hmac(message, key):
+    key = bytes(key, 'utf-8')
+    message = bytes(message, 'utf-8')
     res = hmac.new(key, message, hashlib.sha256)
     return res.hexdigest()
 
 def create_message(text):
     nonce = uuid.uuid4().hex
-    message = str(text) + '|' + str(nonce)
+    message = str(text).replace(' ', '').replace('\n', '') + '|' + str(nonce)
     mac = calc_hmac(message, config.KEY)
     result = bytes(str(message) + ',' + str(mac), 'utf-8')
     return result
@@ -40,6 +42,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     cont_fail = 0
     for elemento in mensajes_a_enviar:
         mensaje = create_message(elemento)
-        s.send(bytes(str(mensaje), 'utf-8'))
+        s.send(mensaje)
         resultado = parse(s.recv(4096).decode())
         print(resultado)
