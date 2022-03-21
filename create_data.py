@@ -1,8 +1,9 @@
 import random
+import config
 
 def creator():
 
-    i = 100
+    i = config.NUM_TRANSACCIONES
 
     with open('./DATA/messages_data.txt', 'w') as f:
         while i > 0:

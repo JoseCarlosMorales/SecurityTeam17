@@ -4,6 +4,7 @@ import hashlib
 import sqlite3
 import socket
 import config
+import random
 from time import gmtime, strftime
 
 def init_database(connection):
@@ -64,17 +65,47 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print(f"Connected by {addr}")
         cont_ok = 0
         cont_fail = 0
+        
+        #===Randomizado del man in the middle====#
+        i = 0
+        n_random = random.randrange(0, 99)
+        #========================================#
+        
+        #=== Randomizado y almacenamiento de Replication-attack ===#
+        j = 0
+        m_random = random.randrange(1, 99)
+        if n_random == m_random:
+            m_random = random.randrange(0, 99)
+        data_replication = []
+        #==========================================================#
+        
         while True:
             data = conn.recv(1024)
             if not data:
                 break
             
             parseo = parse(data.decode())
+            
+            #===== Replication Attack =====#
+            if j == m_random:
+                parseo = data_replication
+            else:
+                #Guarda el dato del mensaje para el siguiente envio de informacion
+                data_replication = parseo
+            #==============================#
+            
             mensaje = parseo[0]
             mensaje_and_nonce = mensaje.split('|')
             nonce = mensaje_and_nonce[1]
-            hmac_client = parseo[1]
             
+            #========== Man in the middle ==========#
+            if i == n_random:
+                mitm_mensaje = mensaje_and_nonce[0]
+                mitm_mensaje = mitm_mensaje + '0'
+                mensaje = str(mitm_mensaje) + '|' + str(mensaje_and_nonce[1])
+            #=======================================#
+            
+            hmac_client = parseo[1]
             hmac_server = calc_hmac(mensaje, config.KEY)
 
             result_search_nonce_db = search_nonce_in_database(bd, nonce)
@@ -91,5 +122,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 bd.execute("INSERT INTO NONCES VALUES (?, ?)", (nonce, datetime.now().strftime('%d/%m/%y %H:%M:%S')))
                 cont_ok += 1
                 conn.send(bytes("TRANSACTION_OK", "utf-8"))
+            #==== Incremento para el random de man in the middle y replication attack ====#
+            i += 1
+            j += 1
+            #=============================================================================#
         
         creacion_logs(cont_ok, cont_fail)

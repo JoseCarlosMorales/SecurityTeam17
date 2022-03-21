@@ -23,7 +23,7 @@ def search_message():
     result=[]
     with open('.\DATA\messages_data.txt') as f:
         for linea in f:
-         result.append(linea)
+            result.append(linea)
     f.close()
     return result
 
