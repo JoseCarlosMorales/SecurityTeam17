@@ -68,14 +68,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         
         #===Randomizado del man in the middle====#
         i = 0
-        n_random = random.randrange(0, 99)
+        n_random = random.randrange(0, config.NUM_TRANSACCIONES)
         #========================================#
         
         #=== Randomizado y almacenamiento de Replication-attack ===#
         j = 0
-        m_random = random.randrange(1, 99)
+        m_random = random.randrange(1, config.NUM_TRANSACCIONES)
         if n_random == m_random:
-            m_random = random.randrange(0, 99)
+            m_random = random.randrange(0, config.NUM_TRANSACCIONES)
         data_replication = []
         #==========================================================#
         
@@ -87,7 +87,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             parseo = parse(data.decode())
             
             #===== Replication Attack =====#
-            if j == m_random:
+            if random.randrange(1, 11) == random.randrange(1, 11):
                 parseo = data_replication
             else:
                 #Guarda el dato del mensaje para el siguiente envio de informacion
@@ -99,7 +99,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             nonce = mensaje_and_nonce[1]
             
             #========== Man in the middle ==========#
-            if i == n_random:
+            if random.randrange(1, 11) == random.randrange(1, 11):
                 mitm_mensaje = mensaje_and_nonce[0]
                 mitm_mensaje = mitm_mensaje + '0'
                 mensaje = str(mitm_mensaje) + '|' + str(mensaje_and_nonce[1])

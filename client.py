@@ -1,5 +1,4 @@
 import socket
-import os
 import hashlib
 import uuid
 import hmac
