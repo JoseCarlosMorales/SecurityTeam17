@@ -20,10 +20,10 @@ def init_database(connection):
         if (date.day - today.day) < 0 or (date.month - today.month) < 0 or (date.year - today.year) < 0:
             connection.execute("DELETE FROM nonces WHERE nonce=?", (nonce[0],))
 
-def search_nonce_in_database(connection, Nonce):
+def search_nonce_in_database(connection, nonce_m):
     nonce_list = connection.execute("SELECT * FROM nonces").fetchall()
     for nonce in nonce_list:
-        if nonce[0] == Nonce: #Denegar el mensaje
+        if nonce[0] == nonce_m:
             return "CONFIDENTIALITY_VIOLATED"
 
 def hmac_comparator(hmac_client, hmac_server):
