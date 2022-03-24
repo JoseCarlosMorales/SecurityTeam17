@@ -53,7 +53,6 @@ def valida_cantidad(cantidad):
         return False
     
 
-
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((config.HOST,config.PORT))
     data = s.recv(4096)
