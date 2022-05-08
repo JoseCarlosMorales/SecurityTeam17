@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
     // Setup Server information
     protected static String server = "192.168.1.133";
     protected static int port = 7070;
+    int numSabanas;
+    int numAlmohadas;
+    int numSillas;
+    int numMesas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
         CheckBox sabanas = (CheckBox) findViewById(R.id.checkBox_sabanas);
+        CheckBox almohadas = (CheckBox) findViewById(R.id.checkBox_almohadas);
+        CheckBox sillas = (CheckBox) findViewById(R.id.checkBox_sillas);
+        CheckBox mesas = (CheckBox) findViewById(R.id.checkBox_mesas);
 
         if (!sabanas.isChecked()) {
             // Mostramos un mensaje emergente;
