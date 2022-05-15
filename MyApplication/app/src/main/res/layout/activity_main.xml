@@ -5,13 +5,6 @@
     android:layout_height="match_parent"
      tools:context="com.example.myapplication.MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hospital Warehouse APP"
-        tools:text="Hospital Warehouse APP" />
-
     <Button
         android:id="@+id/button_send"
         android:layout_width="wrap_content"
@@ -27,9 +20,25 @@
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="714dp"
-        android:layout_below="@+id/textView"
         android:layout_marginTop="-1dp">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hospital Warehouse APP"
+                tools:text="Hospital Warehouse APP" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/spinnerData"/>
+
+        </TableRow>
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -53,7 +62,7 @@
                 android:layout_marginRight="25dp"
                 android:ems="10"
                 android:inputType="number"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
         </TableRow>
 
@@ -80,7 +89,7 @@
                 android:layout_marginRight="25dp"
                 android:ems="10"
                 android:inputType="number"
-                android:visibility="invisible" />
+                android:visibility="visible" />
         </TableRow>
 
         <TableRow
@@ -106,7 +115,7 @@
                 android:layout_marginRight="25dp"
                 android:ems="10"
                 android:inputType="number"
-                android:visibility="invisible" />
+                android:visibility="visible" />
         </TableRow>
 
         <TableRow
@@ -132,7 +141,7 @@
                 android:layout_marginRight="25dp"
                 android:ems="10"
                 android:inputType="number"
-                android:visibility="invisible" />
+                android:visibility="visible" />
         </TableRow>
     </TableLayout>
 
