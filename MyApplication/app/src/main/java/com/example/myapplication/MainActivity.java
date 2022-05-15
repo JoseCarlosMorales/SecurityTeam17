@@ -63,8 +63,39 @@ public class MainActivity extends AppCompatActivity {
                                     // 1. Extraer los datos de la vista
 
                                     // 2. Firmar los datos
+                                    try {
+                                        KeyPairGenerator kgen = KeyPairGenerator.getInstance("RSA");
+                                        kgen.initialize(2048);
+                                        KeyPair keys = kgen.generateKeyPair();
+
+                                        Signature sg = Signature.getInstance("SHA256withRSA");
+                                        sg.initSign(keys.getPrivate());
+                                        sg.update(data.getBytes());
+
+                                        byte[] firma = sg.sign();
 
                                     // 3. Enviar los datos
+                                        String[] protocols = new String[]{"TLSv1.3"};
+                                        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                                        SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
+                                        socket.setEnabledProtocols(protocols);
+
+                                        PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+                                        String sol = data + ";" + firma;
+
+                                        output.println(sol);
+                                        output.flush();
+
+                                        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                                        String response = input.readLine();
+                                        output.close();
+                                        input.close();
+                                        socket.close();
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
 
                                     Toast.makeText(MainActivity.this, "Petición enviada correctamente", Toast.LENGTH_SHORT).show();
                                 }
