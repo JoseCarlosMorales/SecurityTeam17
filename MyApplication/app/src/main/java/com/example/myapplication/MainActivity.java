@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View view) {
                 showDialog();
-                //Thread1 = new Thread(new Thread1());
-                //Thread1.start();
             }
         });
 
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final EditText inMesas = (EditText) findViewById(R.id.input_mesas);
         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
+
         String user = spinner.getSelectedItem().toString();
         if(user.equals("Usuario 1")){
             keys = clave1;
@@ -117,10 +116,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (!sabanas.isChecked() && !almohadas.isChecked() && !sillas.isChecked() && !mesas.isChecked()) {
             // Mostramos un mensaje emergente;
             Toast.makeText(getApplicationContext(), "Selecciona al menos un elemento", Toast.LENGTH_SHORT).show();
-        }if(sabanas.isChecked() && (inSabanas == null || Integer.valueOf(inSabanas.getText().toString()) < 0)
-                ||almohadas.isChecked() && (inAlmohadas == null || Integer.valueOf(inAlmohadas.getText().toString()) < 0)
-                ||sillas.isChecked() && (inSillas == null || Integer.valueOf(inSillas.getText().toString()) < 0)
-                ||mesas.isChecked() && (inMesas == null|| Integer.valueOf(inMesas.getText().toString()) < 0)){
+        }if(sabanas.isChecked() && (inSabanas == null || Integer.valueOf(inSabanas.getText().toString()) < 0 || Integer.valueOf(inSabanas.getText().toString()) > 300)
+                ||almohadas.isChecked() && (inAlmohadas == null || Integer.valueOf(inAlmohadas.getText().toString()) < 0|| Integer.valueOf(inAlmohadas.getText().toString()) > 300)
+                ||sillas.isChecked() && (inSillas == null || Integer.valueOf(inSillas.getText().toString()) < 0|| Integer.valueOf(inSillas.getText().toString()) > 300)
+                ||mesas.isChecked() && (inMesas == null|| Integer.valueOf(inMesas.getText().toString()) < 0 || Integer.valueOf(inMesas.getText().toString()) > 300)){
             Toast.makeText(getApplicationContext(), "Debe introducir un valor adecuado", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -157,37 +156,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                                     final String data = "Sabanas:" + numSabanas + " Almohadas:" + numAlmohadas +
                                             " Sillas:" + numSillas + " Mesas:" + numMesas;
-
-                                    /*
-                                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-                                        @Override
-                                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                            String user = adapterView.getItemAtPosition(i).toString();
-                                            System.out.println("HOLA");
-
-                                            if(user.equals("Usuario 1")){
-                                                System.out.println("HOLA1");
-                                                keys = clave1;
-                                            }else if (user.equals("Usuario 2")){
-                                                System.out.println("HOLA2");
-                                                keys = clave2;
-                                            }else if (user.equals("Usuario 3")){
-                                                System.out.println("HOLA3");
-                                                keys = clave3;
-                                            }else{
-                                                System.out.println("HOLAADMIN");
-                                                keys = claveAdmin;
-                                            }
-
-                                        }
-
-                                        @Override
-                                        public void onNothingSelected(AdapterView<?> adapterView) {
-
-                                        }
-                                    });
-                                    */
 
                                     // 2. Firmar los datos
                                     try {
