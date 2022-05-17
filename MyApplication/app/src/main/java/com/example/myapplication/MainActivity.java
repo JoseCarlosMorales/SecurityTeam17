@@ -1,9 +1,12 @@
 package com.example.myapplication;
 
+import static android.util.Base64.NO_WRAP;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -17,42 +20,37 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Signature;
+import java.util.Base64;
+import java.util.Enumeration;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     // Setup Server information
-    protected static String server = "192.168.1.133";
-    protected static int port = 7070;
     String numSabanas,numAlmohadas,numSillas,numMesas;
-
     KeyPair clave1,clave2,clave3,claveAdmin,keys;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try{
-            KeyPairGenerator kgen = KeyPairGenerator.getInstance("RSA");
-            kgen.initialize(2048);
-            clave1 = kgen.generateKeyPair();
-
-            clave2 = kgen.generateKeyPair();
-
-            clave3 = kgen.generateKeyPair();
-
-            claveAdmin = kgen.generateKeyPair();
-
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         // Capturamos el boton de Enviar
         View button = findViewById(R.id.button_send);
@@ -62,14 +60,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showDialog();
+                //Thread1 = new Thread(new Thread1());
+                //Thread1.start();
             }
         });
 
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String user = adapterView.getItemAtPosition(i).toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
     // Creación de un cuadro de dialogo para confirmar pedido
     private void showDialog() throws Resources.NotFoundException {
+
+        try{
+            KeyPairGenerator kgen = KeyPairGenerator.getInstance("RSA");
+            kgen.initialize(2048);
+            clave1 = kgen.generateKeyPair();
+            clave2 = kgen.generateKeyPair();
+            clave3 = kgen.generateKeyPair();
+            claveAdmin = kgen.generateKeyPair();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
         final CheckBox sabanas = (CheckBox) findViewById(R.id.checkBox_sabanas);
         final CheckBox almohadas = (CheckBox) findViewById(R.id.checkBox_almohadas);
         final CheckBox sillas = (CheckBox) findViewById(R.id.checkBox_sillas);
@@ -79,14 +102,25 @@ public class MainActivity extends AppCompatActivity {
         final EditText inSillas = (EditText) findViewById(R.id.input_sillas);
         final EditText inMesas = (EditText) findViewById(R.id.input_mesas);
         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(this);
+        String user = spinner.getSelectedItem().toString();
+        if(user.equals("Usuario 1")){
+            keys = clave1;
+        }else if (user.equals("Usuario 2")){
+            keys = clave2;
+        }else if (user.equals("Usuario 3")){
+            keys = clave3;
+        }else{
+            keys = claveAdmin;
+        }
 
         if (!sabanas.isChecked() && !almohadas.isChecked() && !sillas.isChecked() && !mesas.isChecked()) {
             // Mostramos un mensaje emergente;
             Toast.makeText(getApplicationContext(), "Selecciona al menos un elemento", Toast.LENGTH_SHORT).show();
-        }if(sabanas.isChecked() && (inSabanas == null || Integer.parseInt(inSabanas.toString()) < 0)
-                ||almohadas.isChecked() && (inAlmohadas == null || Integer.parseInt(inAlmohadas.toString()) < 0)
-                ||sillas.isChecked() && (inSillas == null || Integer.parseInt(inSillas.toString()) < 0)
-                ||mesas.isChecked() && (inMesas == null|| Integer.parseInt(inMesas.toString()) < 0)){
+        }if(sabanas.isChecked() && (inSabanas == null || Integer.valueOf(inSabanas.getText().toString()) < 0)
+                ||almohadas.isChecked() && (inAlmohadas == null || Integer.valueOf(inAlmohadas.getText().toString()) < 0)
+                ||sillas.isChecked() && (inSillas == null || Integer.valueOf(inSillas.getText().toString()) < 0)
+                ||mesas.isChecked() && (inMesas == null|| Integer.valueOf(inMesas.getText().toString()) < 0)){
             Toast.makeText(getApplicationContext(), "Debe introducir un valor adecuado", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -103,40 +137,49 @@ public class MainActivity extends AppCompatActivity {
                                     if (!sabanas.isChecked()){
                                         numSabanas = "0";
                                     }else{
-                                        numSabanas = inSabanas.toString();
+                                        numSabanas = inSabanas.getText().toString();
                                     }
                                     if (!almohadas.isChecked()){
                                         numAlmohadas = "0";
                                     }else{
-                                        numAlmohadas = inAlmohadas.toString();
+                                        numAlmohadas = inAlmohadas.getText().toString();
                                     }
                                     if (!sillas.isChecked()){
                                         numSillas = "0";
                                     }else{
-                                        numSillas = inSillas.toString();
+                                        numSillas = inSillas.getText().toString();
                                     }
                                     if (!mesas.isChecked()){
                                         numMesas = "0";
                                     }else{
-                                        numMesas = inMesas.toString();
+                                        numMesas = inMesas.getText().toString();
                                     }
 
                                     final String data = "Sabanas:" + numSabanas + " Almohadas:" + numAlmohadas +
                                             " Sillas:" + numSillas + " Mesas:" + numMesas;
 
+                                    /*
                                     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
                                         @Override
                                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                             String user = adapterView.getItemAtPosition(i).toString();
+                                            System.out.println("HOLA");
+
                                             if(user.equals("Usuario 1")){
+                                                System.out.println("HOLA1");
                                                 keys = clave1;
                                             }else if (user.equals("Usuario 2")){
+                                                System.out.println("HOLA2");
                                                 keys = clave2;
                                             }else if (user.equals("Usuario 3")){
+                                                System.out.println("HOLA3");
                                                 keys = clave3;
-                                            }else if (user.equals("Admin")){
+                                            }else{
+                                                System.out.println("HOLAADMIN");
                                                 keys = claveAdmin;
                                             }
+
                                         }
 
                                         @Override
@@ -144,30 +187,49 @@ public class MainActivity extends AppCompatActivity {
 
                                         }
                                     });
+                                    */
 
                                     // 2. Firmar los datos
                                     try {
                                         Signature sg = Signature.getInstance("SHA256withRSA");
                                         sg.initSign(keys.getPrivate());
                                         sg.update(data.getBytes());
-
                                         byte[] firma = sg.sign();
 
+                                        // ========== Traspaso de firma ========== //
+                                        System.out.println("TAMAñO FIRMA::" + firma.length);
+                                        System.out.println("FIRMA::" + firma);
+                                        //converting byte to String
+                                        String str_sg = Base64.getEncoder().encodeToString(firma);
+                                        System.out.println("\nSTRING FIRMA::" + str_sg.length());
+                                        //=================================================//
+
+                                        // ========== Traspaso de clave publica ========== //
+                                        System.out.println("PUBLIC KEY::" + keys.getPublic());
+                                        //converting public key to byte
+                                        byte[] byte_pubkey = keys.getPublic().getEncoded();
+                                        System.out.println("\nBYTE KEY::: " + byte_pubkey);
+                                        //converting byte to String
+                                        String str_key = Base64.getEncoder().encodeToString(byte_pubkey);
+                                        System.out.println("\nSTRING KEY::" + str_key);
+                                        //=================================================//
+
+
                                     // 3. Enviar los datos
-                                        String[] protocols = new String[]{"TLSv1.3"};
-                                        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                                        SSLSocket socket = (SSLSocket) socketFactory.createSocket("localhost", 7070);
-                                        socket.setEnabledProtocols(protocols);
+
+                                        Socket socket = new Socket("192.168.56.1", 3343);
 
                                         PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                                        String sol = data + ";" + firma;
+                                        String sol = data + ";" + str_sg + ";" + str_key;
 
                                         output.println(sol);
                                         output.flush();
 
                                         BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                                         String response = input.readLine();
+                                        System.out.println(response);
+                                        Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
                                         output.close();
                                         input.close();
                                         socket.close();
@@ -190,6 +252,4 @@ public class MainActivity extends AppCompatActivity {
                             show();
         }
     }
-
-
 }
