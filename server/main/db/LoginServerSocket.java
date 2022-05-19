@@ -1,10 +1,13 @@
 package server.main.db;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyFactory;
@@ -101,7 +104,46 @@ public class LoginServerSocket {
 				stmt = c.createStatement();
 				System.out.println("Inserting in the database.");
         		String sql = "INSERT INTO REQUESTS (TIMESTAMP,DATA,VERIFICATION) VALUES (\'"+fecha+"\',\'"+datos+"\', \'"+verificacion+"\');"; 
-        		stmt.executeUpdate(sql);
+				stmt.executeUpdate(sql);
+				String mes1 = String.valueOf(LocalDateTime.now().getMonth().getValue()-1);
+				String mes2 = String.valueOf(LocalDateTime.now().getMonth().getValue()-2);
+				String mesNow = String.valueOf(LocalDateTime.now().getMonth().getValue());
+				if(mes1.length() == 1){
+					mes1 = "0" + mes1;
+				}
+				if(mes2.length() == 1){
+					mes2 = "0" + mes2;
+				}
+				if(mesNow.length() == 1){
+					mesNow = "0" + mesNow;
+				}
+				
+				String sql1 = "SELECT count(*) FROM REQUESTS WHERE " + mes1 + " = strftime('%m', TIMESTAMP) ;"; 
+				String sql2 = "SELECT count(*) FROM REQUESTS WHERE " + mes2 + " = strftime('%m', TIMESTAMP) ;";
+				String sqlNow = "SELECT count(*) FROM REQUESTS WHERE " + mesNow + " = strftime('%m', TIMESTAMP) ;";  
+        		
+				String sql1Y = "SELECT count(*) FROM REQUESTS WHERE " + mes1 + " = strftime('%m', TIMESTAMP) and VERIFICATION = 1;"; 
+				String sql2Y = "SELECT count(*) FROM REQUESTS WHERE " + mes2 + " = strftime('%m', TIMESTAMP) and VERIFICATION = 1;";
+				String sqlNowY = "SELECT count(*) FROM REQUESTS WHERE " + mesNow + " = strftime('%m', TIMESTAMP)% and VERIFICATION = 1;";  
+				
+				Writer entradaRatio = new BufferedWriter(new FileWriter("Ratios.txt",true));
+				if(stmt.executeQuery(sql1).getInt(1) == 0|| stmt.executeQuery(sql2).getInt(1) == 0|| stmt.executeQuery(sqlNow).getInt(1) == 0){
+					entradaRatio.append(LocalDateTime.now().getYear()+","+LocalDateTime.now().getMonth().toString()+",0,0\n");
+				}else{
+					Integer ratio1 = stmt.executeQuery(sql1Y).getInt(1)/stmt.executeQuery(sql1).getInt(1);
+					Integer ratio2 = stmt.executeQuery(sql2Y).getInt(1)/stmt.executeQuery(sql2).getInt(1);
+					Integer ratioNow = stmt.executeQuery(sqlNowY).getInt(1)/stmt.executeQuery(sqlNow).getInt(1);
+					if(ratio1 > ratioNow && ratio2 > ratioNow){
+						entradaRatio.append(LocalDateTime.now().getYear()+","+LocalDateTime.now().getMonth().toString()+","+ratioNow+",-\n");
+					}else if((ratioNow > ratio1 && ratioNow > ratio2) || (ratioNow == ratio1 && ratioNow > ratio2)|| (ratioNow > ratio1 && ratioNow == ratio2)){
+						entradaRatio.append(LocalDateTime.now().getYear()+","+LocalDateTime.now().getMonth().toString()+","+ratioNow+",+\n");
+					}else{
+						entradaRatio.append(LocalDateTime.now().getYear()+","+LocalDateTime.now().getMonth().toString()+","+ratioNow+",0\n");
+					}
+				}
+				entradaRatio.close();
+				
+
 				stmt.close();
 				c.commit();
 				c.close();
