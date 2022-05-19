@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                                     // 3. Enviar los datos
 
-                                        Socket socket = new Socket("192.168.5.87", 3343);
+                                        Socket socket = new Socket("COLOQUE IP AQUÍ", 3343);
 
                                         PrintWriter output = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
